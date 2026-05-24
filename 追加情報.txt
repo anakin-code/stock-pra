@@ -194,4 +194,24 @@ public void applyConditions(SearchRequest request) {
 
 ##SearchController.java で空検索を弾く
 SearchController.java で空検索を弾く
+@PostMapping("/profiles")
+public ResponseEntity<?> searchProfiles(
+        @RequestBody SearchRequest request
+) {
+    if (request.isEmptySearch()) {
+        return ResponseEntity
+                .badRequest()
+                .body(Map.of("message", "検索条件を1つ以上入力してください"));
+    }
 
+    List<ProfileSearchResponse> results =
+            searchService.searchProfiles(request);
+
+    if (results.isEmpty()) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", "検索結果がありませんでした"));
+    }
+
+    return ResponseEntity.ok(results);
+}
